@@ -9,44 +9,60 @@ namespace Test
     {
         private static void Main(string[] args)
         {
-            var employeeIds = new List<int>
+            var xmls = new List<XmlElement>
             {
-                1,
-                2,
-                3,
-                4,5,6,7,8,9,10,11
-            };
-
-            var acceptedRange = new List<int>
-            {
-                5, 4, 3
-            };
-
-            int takeAmount = acceptedRange.Find(x => employeeIds.Count % x >= 3);
-
-            var groups = new HashSet<IEnumerable<int>>();
-            var group = new List<int>();
-
-            var rnd = new Random();
-            IOrderedEnumerable<int> randomizedEmployeeIds = employeeIds.OrderBy(x => rnd.Next());
-
-            foreach (int employeeId in randomizedEmployeeIds)
-            {
-                if (group.Count == takeAmount)
+                new XmlElement
                 {
-                    groups.Add(group);
-                    group = new List<int>();
+                    Name = "leaf 1"
+                },
+                new XmlElement
+                {
+                    Name = "branch 1",
+                    ChildElements = new List<XmlElement>
+                    {
+                        new XmlElement
+                        {
+                            Name = "leaf 2"
+                        }
+                    }
                 }
-                group.Add(employeeId);   
-            }
+            };
 
-            groups.Add(group);
-
-            foreach (IEnumerable<int> enumerable in groups)
+            var root = new XmlElement(xmls)
             {
-                foreach (int i in enumerable) Console.Write($" {i},");
-                Console.WriteLine();
-            }
+                Name = "root"
+            };
+
+            var x = root.DepthSearch();
+
+            Console.WriteLine(x);
+        }
+    }
+
+    public class XmlElement
+    {
+        public string Name { get; set; }
+        public List<XmlElement> ChildElements { get; set; }
+
+        public XmlElement(List<XmlElement> children)
+        {
+            ChildElements = children;
+        }
+
+        public XmlElement()
+        {
+            ChildElements = new List<XmlElement>();
+        }
+
+        public bool IsInvalid()
+        {
+            Console.WriteLine(Name);
+            return false;
+        }
+
+        public bool DepthSearch()
+        {
+            return IsInvalid() || (ChildElements.Any() && ChildElements.Any(x => x.DepthSearch()));
         }
     }
 }
